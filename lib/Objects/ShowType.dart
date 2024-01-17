@@ -1,0 +1,1 @@
+enum ShowType { date, week, month, quarter, year, all, option }

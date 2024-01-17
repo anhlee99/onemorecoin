@@ -1,0 +1,1 @@
+enum NavigationTransitionType { none, fade, scale, bottomToTop, topToBottom, rightToLeft }
