@@ -246,10 +246,10 @@ class Utils {
     return sum;
   }
 
-  static double sumBudgetAmountTransaction(List<BudgetModel> budgetModels){
+  static double sumBudgetAmountTransaction(List<BudgetModel> budgetModels, TransactionModelProxy transactionModelProxy){
     double sum = 0;
     for(BudgetModel budgetModel in budgetModels){
-      sum += sumAmountTransaction(budgetModel.transactions);
+      sum += sumAmountTransaction(transactionModelProxy.getAllForBudget(budgetModel.groupId, budgetModel.walletId, budgetModel.fromDate, budgetModel.toDate));
     }
     return sum;
   }
@@ -263,5 +263,6 @@ class Utils {
     String result = amount.replaceAll(",", "");
     return double.parse(result);
   }
+
 
 }

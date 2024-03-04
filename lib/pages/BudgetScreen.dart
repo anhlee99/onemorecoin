@@ -10,6 +10,7 @@ import 'package:onemorecoin/widgets/ShowListWallet.dart';
 import 'package:provider/provider.dart';
 
 import '../components/MyButton.dart';
+import '../model/TransactionModel.dart';
 import '../widgets/CustomLinearProgressIndicator.dart';
 import '../widgets/ShowBudgetPage.dart';
 
@@ -172,13 +173,15 @@ class _BudgetScreenState extends State<BudgetScreen> {
       mapBudget[type] = budgetModels.where((element) => element.budgetType == type).toList();
     }
     List<Widget> listWidget = [];
+
+    var transactionModelProxy = context.read<TransactionModelProxy>();
     for(var key in mapBudget.keys) {
       List<BudgetModel> budgets = mapBudget[key]!;
       if(budgets.isEmpty){
         continue;
       }
       double sumBudget = Utils.sumBudget(budgets);
-      double sumAmount = Utils.sumBudgetAmountTransaction(budgets);
+      double sumAmount = Utils.sumBudgetAmountTransaction(budgets, transactionModelProxy);
       listWidget.add(
         Column(
           children: [
@@ -257,7 +260,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
               endIndent: 0,
             ),
             for(var budget in budgets)
-              _generateItemBudget(budget)
+              _generateItemBudget(budget, transactionModelProxy)
           ],
         )
       );
@@ -265,8 +268,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
     return listWidget;
   }
 
-  Widget _generateItemBudget(BudgetModel budget){
-    double sumAmount = -1 * Utils.sumAmountTransaction(budget.transactions);
+  Widget _generateItemBudget(BudgetModel budget, transactionModelProxy){
+    double sumAmount = -1 * Utils.sumAmountTransaction(transactionModelProxy.getAllForBudget(budget.groupId, budget.walletId, budget.fromDate, budget.toDate));
     double restAmount = budget.budget! - sumAmount;
     GroupModel? group = budget.group;
     return MyButton(
@@ -393,8 +396,9 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    print("build budget screen");
     var budgets = context.watch<BudgetModelProxy>().getAllByWalletId(_wallet.id);
+    _wallet = context.read<TransactionModelProxy>().walletModel;
 
     return Scaffold(
       backgroundColor: Colors.grey[100],

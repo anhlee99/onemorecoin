@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:onemorecoin/pages/ProfileScreen.dart';
 
+import '../pages/LoginScreen.dart';
 import '../pages/Profile/profile_support.dart';
 
 
@@ -33,6 +34,11 @@ class TabNavigator extends StatelessWidget {
           case '/profile_support':
             return MaterialWithModalsPageRoute(
               builder: (context) => ProfileSupportPage(),
+              settings: settings,
+            );
+          case LoginScreen.routeName:
+            return MaterialWithModalsPageRoute(
+              builder: (context) => const LoginScreen(),
               settings: settings,
             );
           default:

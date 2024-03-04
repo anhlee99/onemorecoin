@@ -51,8 +51,8 @@ class _AddNotePageState extends State<AddNotePage> {
       return;
     }
     if (inputNote.text.isNotEmpty && inputNote.text.length < 5) {
-      // var transactions = context.read<TransactionModelProxy>().getLimitByGroup(widget.groupId ?? 0, 10);
-      var transactions = [];
+      var transactions = context.read<TransactionModelProxy>().getLimitByGroup(widget.groupId ?? 0, 10);
+      // var transactions = [];
       List<TransactionModel> suggest = [];
       for (var i = 0; i < transactions.length; i++) {
         if (transactions[i].note!.toLowerCase().contains(inputNote.text.toLowerCase())) {

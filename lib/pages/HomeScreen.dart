@@ -18,6 +18,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../commons/Constants.dart';
 import '../model/TransactionModel.dart';
 import '../widgets/ShowListWallet.dart';
+import '../widgets/ShowReportForPeriod.dart';
 import 'Report/ReportForPeriod.dart';
 
 
@@ -55,6 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     });
+  }
+
+
+  void _showReportForPeriod(BuildContext context) async {
+    ShowReportForPeriod(context);
   }
 
   _calculate(){
@@ -222,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                    MyButton(
                         backgroundColor: Colors.transparent,
                        onTap: () {
+                         _showReportForPeriod(context);
                        },
                        child: const Text("Xem tất cả",
                          style: TextStyle(

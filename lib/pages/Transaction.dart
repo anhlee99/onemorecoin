@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import '../Objects/ShowType.dart';
 import '../model/TransactionModel.dart';
+import '../widgets/ShowReportForPeriod.dart';
 import 'Transaction/addtransaction/AddWalletPage.dart';
 import 'Transaction/addtransaction/ListCurrencyPage.dart';
 
@@ -36,6 +37,7 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
 
   @override
   bool get wantKeepAlive => true;
+
   List<TabTransaction> listTab = [];
   final List<Tab> _tabs = <Tab>[];
   late TabController _tabController;
@@ -54,18 +56,21 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
       _tabIndex = listTab.length > 2 ? listTab.length  - 2 : 0;
       _tabController = TabController(vsync: this, length: listTab.length, initialIndex: _tabIndex);
     });
-
     // _tabController.addListener(() {
-    //   if(listTab.length - _tabController.index > 5){
-    //     setState(() {
-    //       _isBackToday = true;
-    //     });
-    //   }else{
-    //     setState(() {
-    //       _isBackToday = false;
-    //     });
+    //   if(listTab.length - _tabController.index > 5 && !_isBackToday){
+    //     // setState(() {
+    //     //   _isBackToday = true;
+    //     // });
+    //     print("Listener triggered...");
+    //     _isBackToday = true;
+    //   }else if(_isBackToday){
+    //     // setState(() {
+    //     //   _isBackToday = false;
+    //     // });
+    //     print("Listener triggered222...");
     //   }
     // });
+
   }
 
   List<AlertDiaLogItem> _getListAlertDialogItem(BuildContext context) {
@@ -335,6 +340,9 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
                 const SizedBox(height: 5),
                 Center(
                     child: GestureDetector(
+                      onTap: () {
+                        _showReportForPeriod(context);
+                      },
                       child: Text("Xem báo cáo cho giai đoạn này",
                         style: TextStyle(
                           color: Colors.green,
@@ -432,20 +440,24 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
     ShowListWalletPage(context, wallet: _wallet).then((value) => {
       if(value != null && value['wallet'] != null){
         if(value['wallet'].id != _wallet.id){
-          setState(() {
-            _wallet = context.read<TransactionModelProxy>().walletModel;
-            listTab = context.read<TransactionModelProxy>().generateListTabTransactionInTransactionPage(false, context.read<TransactionModelProxy>().showType, value['wallet']);
-          })
+          // setState(() {
+          //   _wallet = context.read<TransactionModelProxy>().walletModel;
+          //   listTab = context.read<TransactionModelProxy>().generateListTabTransactionInTransactionPage(false, context.read<TransactionModelProxy>().showType, value['wallet']);
+          // })
         }
       }
     });
+  }
+
+  void _showReportForPeriod(BuildContext context) async {
+    ShowReportForPeriod(context, tabIndex: _tabController.index);
   }
 
   @override
   void initState() {
     super.initState();
     print("init  Transaction ");
-    _wallet = context.read<TransactionModelProxy>().walletModel;
+    // _wallet = context.read<TransactionModelProxy>().walletModel;
     _generateListTab(ShowType.date);
   }
 
@@ -460,6 +472,7 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _wallet = context.read<TransactionModelProxy>().walletModel;
     listTab = context.read<TransactionModelProxy>().listTab;
     var transactions = context.watch<TransactionModelProxy>().getTransactionByWalletId(_wallet.id);
     if(_wallet.id == 0){
@@ -479,12 +492,12 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
               preferredSize: const Size.fromHeight(80.0),
               child:  AppBar(
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    tooltip: 'Tìm kiếm',
-                    onPressed: () {
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.search),
+                  //   tooltip: 'Tìm kiếm',
+                  //   onPressed: () {
+                  //   },
+                  // ),
                   IconButton(
                     icon: const Icon(Icons.more_vert),
                     tooltip: 'Tuỳ chọn',
@@ -607,6 +620,7 @@ class _Transaction extends State<Transaction> with TickerProviderStateMixin, Aut
                           setState(() {
                             _tabIndex = listTab.length > 2 ? listTab.length  - 2 : 0;
                             _tabController.animateTo(_tabIndex);
+                            _isBackToday = false;
                           });
                         },
                         child: Icon(Icons.keyboard_double_arrow_right, color: Colors.white),

@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:onemorecoin/model/GroupModel.dart';
 import 'package:onemorecoin/model/StorageStage.dart';
@@ -50,6 +51,7 @@ class _AddTransactionState extends State<AddTransaction> {
   bool _isEdit = false;
   bool _isSubmitEdit = false;
 
+  bool _loading = false;
 
   void isShowFull() {
     setState(() {
@@ -238,6 +240,7 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   _addTransaction(BuildContext context) {
+
     if (_isSubmit && !_isEdit) {
       var transactions = context.read<TransactionModelProxy>();
       print("_addTransaction123 ${_dateTime.toString()}");
@@ -264,7 +267,7 @@ class _AddTransactionState extends State<AddTransaction> {
     }
   }
 
-  _updateTransaction(BuildContext context) {
+  _updateTransaction(BuildContext context) async {
     if (_isSubmitEdit && _isEdit) {
       var transactions = context.read<TransactionModelProxy>();
       print("_updateTransaction ${_dateTime.toString()}");
@@ -915,8 +918,11 @@ class _AddTransactionState extends State<AddTransaction> {
                       color: Colors.grey[100],
                       child: !_isEdit
                           ? ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          context.loaderOverlay.show();
+                          await Future.delayed(const Duration(milliseconds: 500));
                           _addTransaction(context);
+                          context.loaderOverlay.hide();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _isSubmit ? null : Colors.grey,
@@ -928,11 +934,18 @@ class _AddTransactionState extends State<AddTransaction> {
                             borderRadius: BorderRadius.circular(32.0),
                           ),
                         ),
-                        child: Text('Tạo giao dịch'),
+                        child: !_loading ? Text('Tạo giao dịch') : CircularProgressIndicator(
+                          color: Colors.yellow.withOpacity(0.6),
+                          strokeWidth: 3,
+                        ),
+
                       )
                           : ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          context.loaderOverlay.show();
+                          await Future.delayed(const Duration(milliseconds: 500));
                           _updateTransaction(context);
+                          context.loaderOverlay.hide();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _isSubmitEdit ? null : Colors.grey,

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onemorecoin/model/BudgetModel.dart';
 import 'package:onemorecoin/widgets/TransactionItem.dart';
+import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
 import '../../../commons/Constants.dart';
@@ -134,10 +135,10 @@ class _ListTransactionInBudgetState extends State<ListTransactionInBudget> {
     budgetModel = widget.budgetModel!;
     groupModel = budgetModel.group;
     walletModel = budgetModel.wallet;
-    transactions = budgetModel.transactions;
+    transactions = context.watch<TransactionModelProxy>().getAllForBudget(budgetModel.groupId, budgetModel.walletId, budgetModel.fromDate, budgetModel.toDate);
     totalAmountTransaction = -1 * Utils.sumAmountTransaction(transactions);
     totalAmountTransaction == 0 ? totalAmountTransaction = 0 : totalAmountTransaction;
-    
+    print("build ListTransactionInBudget");
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(

@@ -45,5 +45,30 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>GIDClientID</key>
+	<string>46715462293-cblefkoiav5sb6drk8crn90rfj04oq0d.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.46715462293-cblefkoiav5sb6drk8crn90rfj04oq0d</string>
+				<string>fb7057863794296876</string>
+			</array>
+		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>7057863794296876</string>
+	<key>FacebookClientToken</key>
+	<string>b046253e2dc4cdc87b4ab5a1decdefc5</string>
+	<key>FacebookDisplayName</key>
+	<string>OneMoreCoin</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+	</array>
 </dict>
 </plist>

@@ -78,11 +78,12 @@ class _DetailBudgetState extends State<DetailBudget> {
     );
   }
 
-  _calculate(){
-    budgetModel = context.read<BudgetModelProxy>().getById(widget.budgetModel.id);
+  _calculate(BuildContext context ){
+    budgetModel = context.watch<BudgetModelProxy>().getById(widget.budgetModel.id);
     groupModel = budgetModel.group;
     walletModel = budgetModel.wallet;
-    transactions = budgetModel.transactions;
+    // transactions = budgetModel.transactions;
+    transactions = context.watch<TransactionModelProxy>().getAllForBudget(budgetModel.groupId, budgetModel.walletId, budgetModel.fromDate, budgetModel.toDate);
 
     DateTime startDate = DateTime.parse(budgetModel.fromDate!);
     DateTime endDate = DateTime.parse(budgetModel.toDate!);
@@ -246,7 +247,8 @@ class _DetailBudgetState extends State<DetailBudget> {
 
   @override
   Widget build(BuildContext context) {
-    _calculate();
+    _calculate(context);
+    print("build DetailBudget");
 
     return Scaffold(
       backgroundColor: Colors.grey[100],

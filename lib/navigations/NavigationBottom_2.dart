@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:onemorecoin/Objects/NavigationTransitionType.dart';
+import 'package:onemorecoin/pages/Report/ReportForPeriod.dart';
 import 'package:onemorecoin/pages/Transaction/addtransaction/AddNewGroupPage.dart';
 import 'package:onemorecoin/pages/Transaction/addtransaction/AddNotePage.dart';
 import 'package:onemorecoin/pages/Transaction/addtransaction/AddNotificationPage.dart';
@@ -57,7 +58,7 @@ class _NavigationExampleState extends State<NavigationBottom2> {
      TabNavigator(
         tabItem: 'ProfileScreen',
         navigatorKey: GlobalKey<NavigatorState>(),
-      ),
+     ),
 // ProfileScreen()
   ];
 
@@ -184,9 +185,3 @@ class BottomObject {
 
 
 
-class HeroControllerChild extends HeroController {
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
-}

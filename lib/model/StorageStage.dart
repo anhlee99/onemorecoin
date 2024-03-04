@@ -6,6 +6,7 @@ import 'package:onemorecoin/Objects/ShowType.dart';
 import 'package:onemorecoin/model/BudgetModel.dart';
 import 'package:onemorecoin/model/WalletModel.dart';
 import 'package:onemorecoin/pages/Transaction.dart';
+import 'package:realm/realm.dart';
 
 import '../Objects/TabTransaction.dart';
 import '../utils/MyDateUtils.dart';
@@ -13,142 +14,65 @@ import '../utils/Utils.dart';
 import 'GroupModel.dart';
 import 'TransactionModel.dart';
 
-class StorageStage extends ChangeNotifier{
+part 'StorageStage.g.dart';
 
-  final List<TabTransaction> _listTab = [];
+@RealmModel()
+class _StorageStage {
 
-  late ShowType _showType = ShowType.date;
+  @PrimaryKey()
+  late int id;
 
-  late WalletModel _walletModel = WalletModel(0, name: "Tất cả các ví", icon: null, currency: "VND");
+  late String key;
 
-  late TransactionModelProxy _transactionModelProxy;
+  late String? value;
 
-  late BudgetModelProxy _budgetModelProxy;
+}
 
-  late List<TransactionModel> _transactionModels = _transactionModelProxy.transactionModels;
+class StorageStageProxy extends ChangeNotifier{
 
-  StorageStage(TransactionModelProxy transactionModelProxy, BudgetModelProxy budgetModelProxy){
-    _transactionModelProxy = TransactionModelProxy();
-    _budgetModelProxy = BudgetModelProxy();
-    init();
-  }
+  late Realm realm;
 
-  init(){
-    _transactionModels = TransactionModelProxy().getAll();
-    _showType = ShowType.date;
-    generateListTabTransaction(Utils.getListTabShowTypeTransaction(_showType, 20));
-  }
+  late bool _isLogin = false;
+  StorageStageProxy(){
+    var config = Configuration.local([StorageStage.schema]);
+    realm = Realm(config);
+    var all = realm.all<StorageStage>();
 
-  ShowType get showType => _showType;
-
-  set showType(ShowType value) {
-    _showType = value;
-  }
-
-  TransactionModelProxy get transactionModelProxy => _transactionModelProxy;
-
-  set transactionModelProxy(TransactionModelProxy value) {
-    _transactionModelProxy = value;
-    notifyListeners();
-  }
-
-  BudgetModelProxy get budgetModelProxy => _budgetModelProxy;
-
-  set budgetModelProxy(BudgetModelProxy value) {
-    _budgetModelProxy = value;
-    notifyListeners();
-  }
-
-  List<TransactionModel> get transactionModels => _transactionModelProxy.getAll();
-
-  List<TabTransaction> get listTab => _listTab;
-
-  void generateListTabTransaction(List<TabTransaction> listTabNoTransaction){
-    _listTab.clear();
-    _listTab.addAll(listTabNoTransaction);
-    var transactions = _transactionModelProxy.getAll();
-    transLoop:
-    for(final tran in transactions){
-      tabLoop:
-      for(var tab in listTab){
-        if(tab.isAll){
-          tab.transactions.add(tran);
-          break tabLoop;
-        }
-        if(tab.isFuture){
-          if(MyDateUtils.isAfter(DateTime.parse(tran.date!), tab.from)){
-            tab.transactions.add(tran);
-            break tabLoop;
-          }
-        }
-        else{
-          if(MyDateUtils.isBetween(DateTime.parse(tran.date!), tab.from, tab.to)){
-            tab.transactions.add(tran);
-            break tabLoop;
-          }
-        }
-      }
+    if(all.isEmpty){
+      realm.write(() {
+        realm.addAll([
+          StorageStage(1, "isLogin", value: "false"),
+        ]);
+      });
+    }else{
+      _isLogin = all[0].value == "true";
     }
+  }
+
+  bool get isLogin => _isLogin;
+
+  set isLogin(bool value) {
+    realm.write(() {
+      realm.find<StorageStage>(1)!.value = value.toString();
+    });
+    _isLogin = value;
     // notifyListeners();
   }
 
-  List<TabTransaction> generateListTabTransactionInTransactionPage(ShowType showType, WalletModel walletModel){
-    if(showType == _showType && walletModel.id == _walletModel.id){
-      return _listTab;
+  saveInfoUser(String key, String value){
+    realm.write(() {
+      realm.add(StorageStage(2, key, value: value), update: true);
+    });
+  }
+
+  String? getInfoUser(String key){
+    var all = realm.all<StorageStage>();
+    var result = all.where((element) => element.key == key);
+    if(result.isNotEmpty){
+      return result.first.value;
     }
-    _showType = showType;
-    _walletModel = walletModel;
-    List<TabTransaction> listTabNoTransaction = Utils.getListTabShowTypeTransaction(showType, 20);
-    _listTab.clear();
-    _listTab.addAll(listTabNoTransaction);
-    var transactions = getTransactionByWalletId(walletModel.id);
-    transLoop:
-    for(final tran in transactions){
-      tabLoop:
-      for(var tab in listTab){
-        if(tab.isAll){
-          tab.transactions.add(tran);
-          break tabLoop;
-        }
-        if(tab.isFuture){
-          if(MyDateUtils.isAfter(DateTime.parse(tran.date!), tab.from)){
-            tab.transactions.add(tran);
-            break tabLoop;
-          }
-        }
-        else{
-          if(MyDateUtils.isBetween(DateTime.parse(tran.date!), tab.from, tab.to)){
-            tab.transactions.add(tran);
-            break tabLoop;
-          }
-        }
-      }
-    }
-    return _listTab;
-    // notifyListeners();
+    return null;
   }
 
-  List<TransactionModel> getTransactionByWalletId(int walletId){
-    return _transactionModels.where((element) => (element.walletId == walletId || walletId == 0)).toList();
-  }
 
-  List<TransactionModel> getNewest(int limit){
-    return _transactionModels.sublist(max(_transactionModels.length, limit) - limit, _transactionModels.length);
-  }
-
-  void addTransaction(TransactionModel transactionModel){
-    _transactionModelProxy.add(transactionModel);
-    _transactionModels.add(transactionModel);
-    // notifyListeners();
-  }
-
-  void updateTransaction(TransactionModel transactionModel){
-    _transactionModelProxy.update(transactionModel);
-    notifyListeners();
-  }
-
-  void deleteTransaction(TransactionModel transactionModel){
-    _transactionModelProxy.delete(transactionModel);
-    notifyListeners();
-  }
 }
